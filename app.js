@@ -28,11 +28,9 @@ app.get('/', function (req, res) {
 
 var io = socket.listen(server);
 io.on('connection', function(socket) {
-  socket.on('new_email', function(data) {
+  socket.on('cmd_in', function(data) {
     console.log(data);
-  });
-
-  socket.on('new_password', function(data) {
-    console.log(data);
+    var new_data = JSON.stringify(data);
+    socket.emit('cmd_out', new_data);
   });
 });

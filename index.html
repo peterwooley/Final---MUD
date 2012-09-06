@@ -1,109 +1,36 @@
-<html>
+<!DOCTYPE HTML>
+<html xmlns="http://www.w3.org/1999/xhtml">
   <head>
-    <script src='js/jquery.min.js'></script>
-    <script src='js/wterm.jquery.js'></script>
+    <meta charset="utf-8" />
+    <title>JSON-RPC Demo for JQuery Terminal Emulator</title>
+    <meta name="author" content="Jakub Jankiewicz - jcubic&#64;onet.pl"/>
+    <meta name="Description" content="Demonstration for JQuery Terminal Emulator using call automaticly JSON-RPC service (in php) with authentication."/>
+    <script src="js/jquery-1.7.1.min.js"></script>
+    <script src="js/jquery.mousewheel-min.js"></script>
+    <script src="js/jquery.terminal-min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
-    <link rel="stylesheet" href="./css/wterm.css" type="text/css" />
-
-    <style>
-      body { background: #000; font-size: 1.3em;  }
-    </style>
-
+    <link href="css/jquery.terminal.css" rel="stylesheet"/>
     <script>
-      String.prototype.reverse = function() {
-        return this.split('').reverse().join('');
-      };
+      var socket = io.connect(location);
+
+      jQuery(function($, undefined) {
+        $('body').terminal(function(command, term) {
+          if (command !== '') {
+            socket.emit('cmd_in', {data: command});
+
+            socket.on('cmd_out', function(data){
+              term.echo(data);
+            });                  
+          }
+        }, {
+            greetings: 'Final -- MUD',
+            name: 'RAZZLE DAZZLE',
+            height: 200,
+            width: 450,
+            prompt: '> '});
+    });
     </script>
-
-
-    <script>
-      $( document ).ready( function() {
-        $('#terminal').wterm( { WIDTH: '100%', HEIGHT: '100%', WELCOME_MESSAGE: 'Welcome to WTerm Demo. To Begin Using type <strong>help</strong>' });
-      });
-
-      var socket = io.connect('http://localhost:3000');
-      var pw = '';
-
-      var command_directory = {
-        'eval': function( tokens ) {
-           tokens.shift();
-           var expression = tokens.join( ' ' );
-           var result = '';
-           try {
-             result = eval( expression ); 
-           } catch( e ) {
-             result = 'Error: ' + e.message;
-           }
-           return result;
-         },
-
-        'date': function( tokens ) {
-
-          return tokens;
-        },
-     
-        'cap': function( tokens ) {
-          tokens.shift();
-          return tokens.join( ' ' ).toUpperCase();
-        },
-
-        'go': function( tokens ) {
-           var url = tokens[1];
-           document.location.href = url;
-         },
-
-        'create': {
-          PS1: '>',
-
-          EXIT_HOOK: function() {
-
-            return 'exit interface commands';
-          },
-
-          START_HOOK: function() {
-            return 'enter an email address';
-          },
- 
-          DISPATCH: function( tokens ) {
-            var p = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
-        
-            if(p.test(tokens)){
-              socket.emit('new_email', {data: tokens});
-              return 'enter a password (6 - 20 character)';
-            }
-            else if(tokens[0].length >= 6 && tokens[0].length <= 20){
-              socket.emit('new_password', {data: tokens});
-              return 'I need to exit!';
-            }
-            else
-            {
-              return 'nope';
-            }
-          }  
-        }
-      };
-
-      for( var j in command_directory ) {
-        $.register_command( j, command_directory[j] );
-      }
-
-      $.register_command( 'help', function() {
-        return 'Wterminal' + '<br>' +
-          'eval - Usage eval &lt;any javascript exression&gt;<br>' +
-          'date - Returns Current Date<br>' + 
-          'cap  - Usage cap &lt;string&gt; - Turns the string to upcase<br>' +
-          'go - Usage go &lt;url&gt; - Sets the browser location to URL<br>' 
-
-      });
-
-    </script>
-    <title> Final -- MUD </title>
   </head>
-  <body>
-
-    <div id='terminal'>
-    </div>
-
-  </body>
+<body>
+</body>
 </html>
-
