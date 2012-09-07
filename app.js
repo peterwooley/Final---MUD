@@ -26,11 +26,16 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
+player = [];
+
 var io = socket.listen(server);
 io.on('connection', function(socket) {
-  socket.on('cmd_in', function(data) {
-    console.log(data);
-    var new_data = JSON.stringify(data);
-    socket.emit('cmd_out', new_data);
+  socket.on('input', function(data) {
+    if(data.length > 0){
+      if(player.length === 0)
+        player[0] = data;
+        console.log(player[0]);
+      socket.emit('got_name', 'Enter a password');
+    }
   });
 });

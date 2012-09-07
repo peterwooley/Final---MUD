@@ -2,9 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta charset="utf-8" />
-    <title>JSON-RPC Demo for JQuery Terminal Emulator</title>
-    <meta name="author" content="Jakub Jankiewicz - jcubic&#64;onet.pl"/>
-    <meta name="Description" content="Demonstration for JQuery Terminal Emulator using call automaticly JSON-RPC service (in php) with authentication."/>
+    <title>Final -- MUD</title>
     <script src="js/jquery-1.7.1.min.js"></script>
     <script src="js/jquery.mousewheel-min.js"></script>
     <script src="js/jquery.terminal-min.js"></script>
@@ -15,12 +13,22 @@
 
       jQuery(function($, undefined) {
         $('body').terminal(function(command, term) {
-          if (command !== '') {
-            socket.emit('cmd_in', {data: command});
 
-            socket.on('cmd_out', function(data){
-              term.echo(data);
-            });                  
+          switch(command)
+          {
+            case 'create':
+              term.echo('Enter a user name');
+              socket.on('got_name', function(data){
+                term.echo(data);
+              });
+              break;
+            case 'login':
+              break;
+            case 'exit':
+              break;
+            default:
+              socket.emit('input', command);
+              break;
           }
         }, {
             greetings: 'Final -- MUD',
