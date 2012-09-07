@@ -8,28 +8,86 @@
     <script src="js/jquery.terminal-min.js"></script>
     <script src="/socket.io/socket.io.js"></script>
     <link href="css/jquery.terminal.css" rel="stylesheet"/>
-    <script>
+    <script type="text/javascript">
       var socket = io.connect(location);
+      var player = new Object();
+      var stage = '';
+
+      function createPlayer(stage, command){
+        switch(stage)
+        {
+          case '-cn':
+            player.name = command;
+            var result = new Object();
+            result.out = 'Enter a password';
+            result.stage = '-cp';
+            break;
+          case '-cp':
+            player.password = command;
+            var result = new Object();
+            result.out = 'Pick a class';
+            result.stage = '-cc';
+            break;
+          case '-cc':
+            player.class = command;
+            var result = new Object();
+            result.out = 'Weclome ' + player.name + ' the ' + player.class;
+            result.stage = 'done';
+            socket.emit('new_player', player);
+            break;
+        }
+
+        return result;
+      }
 
       jQuery(function($, undefined) {
         $('body').terminal(function(command, term) {
 
           switch(command)
           {
-            case 'create':
+            case '/create':
               term.echo('Enter a user name');
-              socket.on('got_name', function(data){
-                term.echo(data);
-              });
+              stage = '-cn';
               break;
-            case 'login':
+            case '/login':
               break;
-            case 'exit':
+            case '/exit':
+              break;
+            case 'north':
+            case 'south':
+            case 'east':
+            case 'west':
               break;
             default:
-              socket.emit('input', command);
+              switch(stage)
+              {
+                case '-cn':
+                case '-cp':
+                case '-cc':         
+                  var res = createPlayer(stage, command);
+                  term.echo(res.stage + ': ' + res.out);
+                  break;
+                case '-ln':
+                case '-lp':
+                  loginPlayer(stage, command);
+                  break;
+                case 'done':
+                  break;
+                default:
+                  term.echo('WRONG!');
+                  break;
+              }
+              if(res.stage)
+                stage = res.stage;
+              else
+                stage = '';
               break;
           }
+
+          socket.on('player_saved', function(data){
+            term.echo(JSON.stringify(data));
+          });
+
         }, {
             greetings: 'Final -- MUD',
             name: 'RAZZLE DAZZLE',

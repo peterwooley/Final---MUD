@@ -26,16 +26,12 @@ app.get('/', function (req, res) {
   res.sendfile(__dirname + '/index.html');
 });
 
-player = [];
 
 var io = socket.listen(server);
 io.on('connection', function(socket) {
-  socket.on('input', function(data) {
-    if(data.length > 0){
-      if(player.length === 0)
-        player[0] = data;
-        console.log(player[0]);
-      socket.emit('got_name', 'Enter a password');
-    }
+  socket.on('new_player', function(data) {
+    //Save player login information to database. Oh, and implement a database.
+    socket.emit('player_saved', data)
+    console.log(data);
   });
 });

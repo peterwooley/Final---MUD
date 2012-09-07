@@ -1,0 +1,34 @@
+Dumbed down MUD todo list
+
+Create (assign value{-n, -p, -c} to stage variable on output)
+  -Output: 'Enter Name'
+  -Input: -n name
+  -Output: 'Enter Password'
+  -Input: -p password
+  -Output: 'Pick a Class', list of classes
+  -Input: -c class
+  -Go to world
+
+Login (assign value{-n, -p} to stage variable on output)
+  -Output: 'Enter Name'
+  -Input: -n name
+  -Output: 'Enter Password'
+  -Input: -p password
+  -Go to World
+
+World
+  -Output: 'Welcome to World'
+  -Input: anything
+
+Inputs
+  Prepend these commands with a '/' to trigger chain of events
+
+  /create
+  /login
+  /exit
+  /move {north, south, east, west}
+  /chat {message}
+  /kill {target}
+
+  Commands without '/' are treated at strings and return error message
+
