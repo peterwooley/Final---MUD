@@ -34,4 +34,10 @@ io.on('connection', function(socket) {
     socket.emit('player_saved', data)
     console.log(data);
   });
+  socket.on('chat', function(data) {
+    io.sockets.emit('general_chat', data);
+  });
+  socket.on('login', function(data) {
+    socket.broadcast.emit('Player is online.'); //get player name
+  });
 });

@@ -9,10 +9,15 @@
     <script src="/socket.io/socket.io.js"></script>
     <link href="css/jquery.terminal.css" rel="stylesheet"/>
     <script type="text/javascript">
+
       var socket = io.connect(location);
       var player = new Object();
+	  var message = new Object();
       var stage = '';
-
+      
+	  socket.emit('chat', message);
+	  
+	  //Player Creation process
       function createPlayer(stage, command){
         switch(stage)
         {
@@ -31,7 +36,7 @@
           case '-cc':
             player.class = command;
             var result = new Object();
-            result.out = 'Weclome ' + player.name + ' the ' + player.class;
+            result.out = 'Welcome ' + player.name + ' the ' + player.class;
             result.stage = 'done';
             socket.emit('new_player', player);
             break;
@@ -39,14 +44,26 @@
 
         return result;
       }
+	  
+	  //Player login
+	  function createPlayer(stage, command){
+        switch(stage)
+        {
+          case '-lp':
+			break;
+		}
+		
+		return result;
+      }
 
+	  //Global Command List
       jQuery(function($, undefined) {
         $('body').terminal(function(command, term) {
-
+		
           switch(command)
           {
             case '/create':
-              term.echo('Enter a user name');
+              term.echo('Enter a user name:');
               stage = '-cn';
               break;
             case '/login':
@@ -58,6 +75,10 @@
             case 'east':
             case 'west':
               break;
+			case '/chat':
+			  term.echo('Enter a message:');
+			  stage = '-ct';
+			  break;
             default:
               switch(stage)
               {
@@ -70,7 +91,13 @@
                 case '-ln':
                 case '-lp':
                   loginPlayer(stage, command);
+				  term.echo(res.stage + ': ' + res.out);
                   break;
+				case '-ct':
+                  message = command;
+		          stage = 'done';
+			      socket.emit('chat', message);
+				  return
                 case 'done':
                   break;
                 default:
@@ -86,6 +113,11 @@
 
           socket.on('player_saved', function(data){
             term.echo(JSON.stringify(data));
+          });
+		  
+		  //TODO: Replace "Player:" here with actual Nicks
+		  socket.on('general_chat', function(data){
+            term.echo('Player: '+ data);
           });
 
         }, {
