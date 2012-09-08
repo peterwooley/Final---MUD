@@ -12,12 +12,12 @@
 
       var socket = io.connect(location);
       var player = new Object();
-	  var message = new Object();
+      var message = new Object();
       var stage = '';
       
-	  socket.emit('chat', message);
+      socket.emit('chat', message);
 	  
-	  //Player Creation process
+      //Player Creation process
       function createPlayer(stage, command){
         switch(stage)
         {
@@ -45,18 +45,18 @@
         return result;
       }
 	  
-	  //Player login
-	  function createPlayer(stage, command){
+      //Player login
+      function createPlayer(stage, command){
         switch(stage)
         {
           case '-lp':
-			break;
-		}
+          break;
+        }
 		
-		return result;
+        return result;
       }
 
-	  //Global Command List
+      //Global Command List
       jQuery(function($, undefined) {
         $('body').terminal(function(command, term) {
 		
@@ -75,10 +75,10 @@
             case 'east':
             case 'west':
               break;
-			case '/chat':
-			  term.echo('Enter a message:');
-			  stage = '-ct';
-			  break;
+            case '/chat':
+              term.echo('Enter a message:');
+              stage = '-ct';
+              break;
             default:
               switch(stage)
               {
@@ -91,13 +91,13 @@
                 case '-ln':
                 case '-lp':
                   loginPlayer(stage, command);
-				  term.echo(res.stage + ': ' + res.out);
+                  term.echo(res.stage + ': ' + res.out);
                   break;
-				case '-ct':
+                case '-ct':
                   message = command;
-		          stage = 'done';
-			      socket.emit('chat', message);
-				  return
+                  stage = 'done';
+                  socket.emit('chat', message);
+                  return
                 case 'done':
                   break;
                 default:
@@ -115,8 +115,8 @@
             term.echo(JSON.stringify(data));
           });
 		  
-		  //TODO: Replace "Player:" here with actual Nicks
-		  socket.on('general_chat', function(data){
+          //TODO: Replace "Player:" here with actual Nicks
+          socket.on('general_chat', function(data){
             term.echo('Player: '+ data);
           });
 
