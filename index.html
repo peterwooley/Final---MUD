@@ -15,8 +15,8 @@
       var message = new Object();
       var stage = '';
       
-      socket.emit('chat', message);
-	  
+      socket.emit('chat', message);    
+
       //Player Creation process
       function createPlayer(stage, command){
         switch(stage)
@@ -55,10 +55,24 @@
 		
         return result;
       }
+      
+			// PMW: Your socket.on()s were adding a new copy of your handler
+			// every time you ran your terminal's command function.
+			// If you move the socket.on()s out of the terminal's command function
+			// they won't be recreated every time you run a terminal command.
+			socket.on('player_saved', function(data){
+        term.echo(JSON.stringify(data));
+      });
+  
+      //TODO: Replace "Player:" here with actual Nicks
+      socket.on('general_chat', function(data){
+        term.echo('Player: '+ data);
+      });  
 
       //Global Command List
       jQuery(function($, undefined) {
-        $('body').terminal(function(command, term) {
+      	// PMW: Save reference to terminal for later use.
+        var terminal = $('body').terminal(function(command, term) {
 		
           switch(command)
           {
@@ -111,14 +125,7 @@
               break;
           }
 
-          socket.on('player_saved', function(data){
-            term.echo(JSON.stringify(data));
-          });
-		  
-          //TODO: Replace "Player:" here with actual Nicks
-          socket.on('general_chat', function(data){
-            term.echo('Player: '+ data);
-          });
+          
 
         }, {
             greetings: 'Final -- MUD',
@@ -126,6 +133,20 @@
             height: 200,
             width: 450,
             prompt: '> '});
+            
+            
+				// PMW: Your socket.on()s were adding a new copy of your handler
+				// every time you ran your terminal's command function.
+				// If you move the socket.on()s out of the terminal's command function
+				// they won't be recreated every time you run a terminal command.
+				socket.on('player_saved', function(data){
+	        terminal.echo(JSON.stringify(data));
+	      });
+	  
+	      //TODO: Replace "Player:" here with actual Nicks
+	      socket.on('general_chat', function(data){
+	        terminal.echo('Player: '+ data);
+	      });  
     });
     </script>
   </head>
